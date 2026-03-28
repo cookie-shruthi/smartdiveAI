@@ -1,0 +1,5 @@
+{
+  "name": "Smart Dive Assistant AR",
+  "description": "A simulated AR scuba diving assistant with real-time species detection and depth alerts.",
+  "requestFramePermissions": ["camera"]
+}
