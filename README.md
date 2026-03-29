@@ -26,9 +26,14 @@ Challenges:
 - Run "npm run build" and "npx cap sync android" in terminal
 - Upload code to your android device
 
-## Screenshots
+## Photo Gallery
 
-{ Include at least one screenshot or video. }
+<img width="1391" height="761" alt="image" src="https://github.com/user-attachments/assets/bea83800-7507-4e9b-8c5c-9862f6575740" />
+<img width="1380" height="754" alt="image" src="https://github.com/user-attachments/assets/3331db26-42d7-4ff8-a83b-d34fa20afff0" />
+<img width="1291" height="758" alt="image" src="https://github.com/user-attachments/assets/5d6026dc-bb8f-411e-8260-e0979758c048" />
+<img width="1463" height="763" alt="image" src="https://github.com/user-attachments/assets/4bc8520a-084b-480b-b83d-4ad84e2c7bb6" />
+<img width="1296" height="770" alt="image" src="https://github.com/user-attachments/assets/138ef934-e321-4792-8652-5e2424006a88" />
+
 
 ## What's Next for SmartDive AI
 
