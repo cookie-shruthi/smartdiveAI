@@ -116,7 +116,8 @@ export default function App() {
       ctx.drawImage(video, 0, 0);
       const base64Image = canvas.toDataURL('image/jpeg').split(',')[1];
 
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      // Use the provided API key and the 3-flash-preview model
+      const ai = new GoogleGenAI({ apiKey: "AIzaSyDG1xu8uMs6L2aEL6lNinqptcy-RbrFU8M" });
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: {
