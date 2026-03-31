@@ -19,16 +19,21 @@ Challenges:
 
 
 ## Set Up Instructions
-- Install nodejs for your OS (windows, Mac, Linux)
-- Install Android studio for your OS (windows, Mac, Linux, ChromeOS)
-- Install Capacitor
-- Put capacitor into project
-- Run "npm run build" and "npx cap sync android" in terminal
-- Upload code to your android device
+1. Install Node.js for your OS (Windows, Mac, Linux)
+2. Install Android studio for your OS (windows, Mac, Linux, ChromeOS)
+3. Install "Capacitor"
+4. Put "Capacitor" into the project
+5. Run "npm run build" and "npx cap sync android" in the terminal
+6. Upload code to your Android device
+   
+## Photo Gallery
 
-## Screenshots
+<img width="1391" height="761" alt="image" src="https://github.com/user-attachments/assets/bea83800-7507-4e9b-8c5c-9862f6575740" />
+<img width="1380" height="754" alt="image" src="https://github.com/user-attachments/assets/3331db26-42d7-4ff8-a83b-d34fa20afff0" />
+<img width="1291" height="758" alt="image" src="https://github.com/user-attachments/assets/5d6026dc-bb8f-411e-8260-e0979758c048" />
+<img width="1463" height="763" alt="image" src="https://github.com/user-attachments/assets/4bc8520a-084b-480b-b83d-4ad84e2c7bb6" />
+<img width="1296" height="770" alt="image" src="https://github.com/user-attachments/assets/138ef934-e321-4792-8652-5e2424006a88" />
 
-{ Include at least one screenshot or video. }
 
 ## What's Next for SmartDive AI
 
