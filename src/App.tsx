@@ -18,7 +18,7 @@ export default function App() {
 
   // Settings State
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || "AIzaSyAp89tfWvVCfbBXRx6tHqDjujQtiF3RG5M");
-  const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || "gemini-1.5-flash");
+  const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || "gemini-2.0-flash");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const isAlertDismissedRef = useRef(isAlertDismissed);
@@ -54,7 +54,7 @@ export default function App() {
       } else if (seconds >= 15 && seconds < 20) {
         updateHUD("Box Jellyfish", currentDepth);
       } else if (seconds >= 25 && seconds < 30) {
-        updateHUD("Great White", currentDepth);
+        updateHUD("Great White Shark", currentDepth);
       } else if (seconds >= 32 && seconds < 37) {
         updateHUD("Clownfish", currentDepth);
       } else {
@@ -85,17 +85,24 @@ export default function App() {
 
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' },
+        const constraints = {
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
           audio: false 
-        });
+        };
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         if (cameraRef.current) {
           cameraRef.current.srcObject = stream;
+          cameraRef.current.play().catch(e => console.error("Auto-play failed:", e));
         }
       } catch (err) {
         console.error("Error accessing camera:", err);
         setIsLiveMode(false);
-        alert("Camera access denied or not available.");
+        alert("Camera access denied. Please check phone settings.");
       }
     };
 
@@ -114,54 +121,94 @@ export default function App() {
       const canvas = canvasRef.current;
       const video = cameraRef.current;
 
-      if (video.videoWidth === 0) {
-        throw new Error("Camera not ready");
-      }
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
       ctx.drawImage(video, 0, 0);
-      const base64Image = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+      const base64Image = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
 
-      // Using Fetch API with User Settings
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+      const callGemini = async (modelName: string) => {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: "Identify any animal in this image. Return ONLY a JSON object with: { 'name': 'Specific Animal Name', 'isDangerous': true/false, 'warning': 'Short safety warning' }. If no animal is found, return { 'name': 'None' }." },
+                { inline_data: { mime_type: "image/jpeg", data: base64Image } }
+              ]
+            }]
+          })
+        });
+        return await response.json();
+      };
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: "Identify the fish or sea creature in this image. Return ONLY a JSON object with 'name' (string) and 'isDangerous' (boolean). Be specific (e.g., 'White-spotted puffer')." },
-              { inline_data: { mime_type: "image/jpeg", data: base64Image } }
-            ]
-          }]
-        })
-      });
+      let data = await callGemini(selectedModel);
 
-      const data = await response.json();
+      // AUTO-RETRY LOGIC: If the user-selected model fails, we try stable fallbacks
+      if (data.error && selectedModel !== "gemini-1.5-flash") {
+        console.warn("Primary model failed, attempting stable fallback...");
+        data = await callGemini("gemini-1.5-flash");
+      }
 
       if (data.error) {
         throw new Error(data.error.message);
       }
 
-      const aiText = data.candidates[0].content.parts[0].text;
+      const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!aiText) throw new Error("No AI response");
+
       const cleanJson = aiText.replace(/```json|```/g, "").trim();
       const result = JSON.parse(cleanJson);
 
-      if (result.name && result.name !== 'None') {
-        updateHUD(result.name, depth);
+      if (result.name && result.name.toLowerCase() !== 'none') {
+        processDetection(result);
       } else {
         setSpecies("NO TARGET");
       }
     } catch (err: any) {
       console.error("Vision failed:", err);
-      setSpecies(`ERR: ${err.message?.substring(0, 20) || "FAIL"}`);
+      // REPLACED SILENT FAIL: No longer hardcoded to Pufferfish
+      setSpecies("SCAN FAILED");
+      setAlertLevel('warning');
+      setWarning("AI Vision Link unstable. Retry scan.");
     } finally {
       setIsScanning(false);
+    }
+  };
+
+  const processDetection = (result: any) => {
+    const name = result.name;
+    const lowerName = name.toLowerCase();
+
+    // Check if it matches a known dangerous species in our list
+    const localFish = fishList.find(f =>
+      lowerName.includes(f.name.toLowerCase()) ||
+      f.name.toLowerCase().includes(lowerName)
+    );
+
+    if (localFish) {
+      updateHUD(localFish.name, depth);
+    } else {
+      // Dynamic identification for any other animal
+      setSpecies(name);
+      const isDanger = result.isDangerous ||
+                       lowerName.includes('dangerous') ||
+                       lowerName.includes('toxic') ||
+                       lowerName.includes('venomous') ||
+                       lowerName.includes('lionfish') ||
+                       lowerName.includes('puffer');
+
+      setCurrentFishData({
+        name: name,
+        warning: result.warning || (isDanger ? "⚠️ POTENTIAL DANGER." : ""),
+        safetySteps: isDanger ? ["Exercise extreme caution.", "Do not touch.", "Maintain distance."] : []
+      });
+      setWarning(result.warning || (isDanger ? "⚠️ POTENTIAL DANGER." : null));
+      setAlertLevel(isDanger ? 'danger' : 'normal');
     }
   };
 
@@ -196,7 +243,10 @@ export default function App() {
         lowerName.includes('octopus') ||
         lowerName.includes('eel') ||
         lowerName.includes('barracuda') ||
-        lowerName.includes('puffer');
+        lowerName.includes('puffer') ||
+        lowerName.includes('candiru') ||
+        lowerName.includes('tigerfish') ||
+        lowerName.includes('piranha');
 
       if (isDanger) {
         setAlertLevel('danger');
@@ -212,7 +262,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden font-mono">
+    <div className="relative w-full h-screen bg-black overflow-hidden font-mono text-cyan-400">
       {/* Background Video (Simulation) */}
       {!isLiveMode && (
         <video
@@ -312,7 +362,7 @@ export default function App() {
         <div className="absolute inset-0 bg-black/90 z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
           <div className="bg-gray-900 border-2 border-cyan-500 rounded-2xl p-6 w-full max-w-md shadow-[0_0_30px_rgba(6,182,212,0.4)]">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-cyan-400 font-bold text-xl tracking-widest">SYSTEM CONFIG</h2>
+              <h2 className="text-cyan-400 font-bold text-xl tracking-widest uppercase">System Config</h2>
               <button onClick={() => setIsSettingsOpen(false)} className="text-cyan-900 hover:text-white transition-colors">
                 <X size={28} />
               </button>
@@ -334,8 +384,9 @@ export default function App() {
                 <label className="block text-cyan-500 text-xs mb-2 uppercase tracking-[0.2em] font-bold">Model Engine</label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { id: 'gemini-3.0-flash', label: '3.0 FLASH' },
-                    { id: 'gemini-3.0-pro', label: '3.0 PRO' }
+                    { id: 'gemini-1.5-flash', label: '1.5 FLASH' },
+                    { id: 'gemini-2.0-flash', label: '2.0 FLASH' },
+                    { id: 'gemini-2.0-flash-exp', label: '2.0 FLASH PREVIEW' }
                   ].map((model) => (
                     <button
                       key={model.id}

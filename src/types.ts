@@ -7,7 +7,44 @@ export interface Fish {
 }
 
 export const fishList: Fish[] = [
-  // --- CRITICAL DANGER (Sharks & Deadly Venom) ---
+  // --- MOST DANGEROUS FISHES (User Requested) ---
+  {
+    name: "Puffer", scientificName: "Tetraodontidae", maxDepth: 100,
+    warning: "💀 LETHAL TOXIN: DO NOT TOUCH OR CONSUME.",
+    safetySteps: ["Contains tetrodotoxin, 1200x deadlier than cyanide.", "Do not handle even if dead.", "Seek immediate medical attention if skin contact occurs."]
+  },
+  {
+    name: "Red Lionfish", scientificName: "Pterois volitans", maxDepth: 50,
+    warning: "🚨 VENOMOUS SPINES: EXTREMELY PAINFUL STING.",
+    safetySteps: ["Maintain at least 2 meters distance.", "Do not attempt to corner or touch.", "If stung, soak area in hot water and seek ER care."]
+  },
+  {
+    name: "Candiru", scientificName: "Vandellia cirrhosa", maxDepth: 10,
+    warning: "🚨 PARASITIC DANGER: ATTRACTED TO WASTE.",
+    safetySteps: ["Avoid urinating while in the water.", "Wear protective swimwear.", "Very small and hard to spot in murky water."]
+  },
+  {
+    name: "Great White Shark", scientificName: "Carcharodon carcharias", maxDepth: 1200,
+    warning: "🚨 APEX PREDATOR: MAXIMUM ALERT.",
+    safetySteps: ["Stay close to the bottom or reef wall.", "Maintain eye contact.", "Do not act like prey (no rapid swimming).", "Signal for boat pickup immediately."]
+  },
+  {
+    name: "Moray Eel", scientificName: "Muraenidae", maxDepth: 100,
+    warning: "⚠️ POWERFUL BITE: BACTERIAL INFECTION RISK.",
+    safetySteps: ["Do not reach into reef crevices.", "Maintain hands-off policy near coral.", "If bitten, clean wound immediately and seek antibiotics."]
+  },
+  {
+    name: "Tigerfish", scientificName: "Hydrocynus vittatus", maxDepth: 30,
+    warning: "🚨 RAZOR TEETH: HIGHLY AGGRESSIVE PREDATOR.",
+    safetySteps: ["Avoid splashing at the surface.", "Keep distance from active feeding zones.", "Do not provoke or corner."]
+  },
+  {
+    name: "Piranha", scientificName: "Pygocentrus nattereri", maxDepth: 20,
+    warning: "🚨 FRENZY RISK: ACUTE SENSE OF BLOOD.",
+    safetySteps: ["Do not enter water with open wounds.", "Exit water if school is detected.", "Avoid areas where fishing/cleaning is happening."]
+  },
+
+  // --- CRITICAL DANGER (Other Sharks & Deadly Venom) ---
   { 
     name: "Bull shark", scientificName: "Carcharhinus leucas", maxDepth: 150, 
     warning: "🚨 APEX PREDATOR: EXTREME AGGRESSION.",
@@ -17,11 +54,6 @@ export const fishList: Fish[] = [
     name: "Tiger shark", scientificName: "Galeocerdo cuvier", maxDepth: 350, 
     warning: "🚨 APEX PREDATOR: CURIOUS & DANGEROUS.",
     safetySteps: ["Keep the shark in sight.", "Use a dive tool or camera as a buffer if it approaches.", "Stay calm and maintain your position.", "Exit the water slowly and quietly."]
-  },
-  { 
-    name: "Great white shark", scientificName: "Carcharodon carcharias", maxDepth: 1200, 
-    warning: "🚨 APEX PREDATOR: MAXIMUM ALERT.",
-    safetySteps: ["Stay close to the bottom or reef wall.", "Maintain eye contact.", "Do not act like prey (no rapid swimming).", "Signal for boat pickup immediately."]
   },
   { 
     name: "Box Jellyfish", maxDepth: 5, 
@@ -51,16 +83,6 @@ export const fishList: Fish[] = [
     safetySteps: ["Swim away horizontally, not upwards.", "Keep your fins between you and the fish.", "Avoid the 'cone' above their nest."]
   },
   { 
-    name: "Lionfish", scientificName: "Pterois volitans", maxDepth: 50, 
-    warning: "⚠️ VENOMOUS SPINES: DO NOT TOUCH.",
-    safetySteps: ["Maintain 2m distance.", "If stung, soak in hot water and seek medical help."]
-  },
-  { 
-    name: "Green moray", scientificName: "Gymnothorax funebris", maxDepth: 40, 
-    warning: "⚠️ POWERFUL BITE: KEEP HANDS CLEAR.",
-    safetySteps: ["Do not reach into reef crevices.", "Do not attempt to feed.", "If bitten, do not pull away forcefully."]
-  },
-  { 
     name: "Alligator gar", scientificName: "Atractosteus spatula", maxDepth: 10, 
     warning: "⚠️ SHARP TEETH: DO NOT PROVOKE.",
     safetySteps: ["Keep distance in shallow water.", "Do not corner the fish.", "Watch for sudden lunges."]
@@ -71,7 +93,7 @@ export const fishList: Fish[] = [
     safetySteps: ["Shuffle feet when walking in sand.", "Do not swim directly over the ray.", "If stung, seek medical attention for barb removal."]
   },
 
-  // --- GENERAL/SAFE (Requested List) ---
+  // --- GENERAL/SAFE ---
   { name: "Freshwater bream", scientificName: "Abramis brama", maxDepth: 20, warning: "" },
   { name: "Sergeant-major", scientificName: "Abudefduf saxatilis", maxDepth: 15, warning: "" },
   { name: "Blackspot sergeant", scientificName: "Abudefduf sordidus", maxDepth: 10, warning: "" },
